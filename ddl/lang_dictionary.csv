@@ -1,0 +1,13 @@
+Msg_ID,Category,Text_EN,Text_KO,Text_VI,Text_ETC,Use_YN,Created_By,Created_DT,Modified_By,Modified_DT
+BTN_ADD,COMMON,Add,추가,,,Y,,,,
+BTN_CANCEL,COMMON,Cancel,취소,,,Y,,,,
+BTN_EDIT,COMMON,Edit,수정,,,Y,,,,
+BTN_LOGOUT,COMMON,Logout,로그아웃,,,Y,,,,
+BTN_SAVE,COMMON,Save,저장,,,Y,,,,
+BTN_SEARCH,COMMON,Search,조회,,,Y,,,,
+LBL_MODEL_CD,COMMON,Please enter required fields.,필수 항목을 입력하세요.,,,Y,,,,
+LBL_MODEL_NMA,COMMON,Model Name,모델명,,,Y,,,,
+TITLE_SYSTEM,COMMON,AMS MES System,AMO MES 시스템,,,Y,,,,
+MENU_CODE,MENU,Common Code,공통코드 관리,,,Y,,,,
+MENU_MASTER,MENU,Master Data,기준정보 관리,,,Y,,,,
+MENU_MODEL,MENU,Model Master,모델 마스터,,,Y,,,,

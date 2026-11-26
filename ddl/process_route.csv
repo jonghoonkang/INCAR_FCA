@@ -1,0 +1,3 @@
+﻿Route_ID,Route_NM,Model_CD,Revision_CD,Effective_From_DT,Effective_To_DT,Status_CD,Use_YN,Created_By,Modified_By,Created_DT,Modified_DT,Description
+PR-FCAA-R01,FCAA 표준 생산공정,FCAA,R01,20261001,,APP,Y,,,,,
+PR-FCAB-R01,FCAB 표준 생산공정,FCAB,R01,20261001,,APP,Y,,,,,

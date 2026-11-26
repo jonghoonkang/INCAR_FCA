@@ -1,0 +1,131 @@
+﻿Group_CD,Code,Name,Disp_NO,Value1,Value2,Value3,Use_YN,Created_By,Modified_By,Created_DT,Modified_DT,Description
+CLR001,WHITE,White,1,,,,Y,,,,,흰색
+CLR001,BLACK,Black,2,,,,Y,,,,,검정색
+CLR001,RED,Red,3,,,,Y,,,,,빨강
+CLR001,YELLOW,Yellow,4,,,,Y,,,,,노랑
+CLR001,BLUE,Blue,5,,,,Y,,,,,파랑
+CLR001,GREEN,Green,6,,,,Y,,,,,초록
+CLR001,BROWN,Brown,7,,,,Y,,,,,갈색
+CLR001,GOLD,Gold,8,,,,Y,,,,,금색
+CLR001,SILVER,Silver,9,,,,Y,,,,,은색
+RET001,OK,OK,1,성공,,,Y,,,,,성공
+RET001,NG,NG,2,실패,,,Y,,,,,실패
+RET002,PASS,Pass,1,성공,,,Y,,,,,성공
+RET002,FAIL,Fail,2,실패,,,Y,,,,,실패
+PCK001,PRODUCT,단품,1,1,,,Y,,,,,포장 단위 - 단품
+PCK001,BOX10,박스(10),2,10,,,Y,,,,,포장 단위 - 박스당 10개
+PCK001,BOX30,박스(30),3,30,,,Y,,,,,포장 단위 - 박스당 30개
+PCK001,BOX50,박스(50),4,50,,,Y,,,,,포장 단위 - 박스당 50개
+PCK001,PAL500,팔레트(500),5,500,,,Y,,,,,포장 단위 - 팔레트당 500개
+PCK002,EACH,EA,1,,,,Y,,,,,단위 - 개
+PCK002,BOX,BOX,2,,,,Y,,,,,단위 - 박스
+PCK002,PALLET,Pallet,3,,,,Y,,,,,단위 - 팔레트
+UOM001,CELSIUS,℃,1,,,,Y,,,,,섭씨
+UOM001,FAHREN,℉,2,,,,Y,,,,,화씨
+UOM002,OHM,Ω,1,,,,Y,,,,,옴
+UOM002,KOHM,㏀,2,,,,Y,,,,,킬로옴
+UOM002,MOHM,㏁,3,,,,Y,,,,,메가옴
+UOM003,MGRAM,㎎,1,,,,Y,,,,,밀리그램
+UOM003,GRAM,g,2,,,,Y,,,,,그램
+UOM003,KGRAM,㎏,3,,,,Y,,,,,킬로그램
+UOM004,MAMPARE,㎃,1,,,,Y,,,,,밀리암페어
+UOM004,AMPARE,A,2,,,,Y,,,,,암페어
+UOM004,KAMPARE,㎄,3,,,,Y,,,,,킬로암페어
+UOM005,HZ,㎐,1,,,,Y,,,,,헤르츠
+UOM005,KHZ,㎑,2,,,,Y,,,,,킬로헤르츠
+UOM005,MHZ,㎒,3,,,,Y,,,,,메가헤르츠
+UOM005,GHZ,㎓,4,,,,Y,,,,,기가헤르츠
+UOM006,MLITER,㎖,1,,,,Y,,,,,밀리리터
+UOM006,LITER,ℓ,2,,,,Y,,,,,리터
+UOM006,KLITER,㎘,3,,,,Y,,,,,킬로리터
+UOM007,MMETER,㎜,1,,,,Y,,,,,밀리미터
+UOM007,CMETER,㎝,2,,,,Y,,,,,센티미터
+UOM007,METER,m,3,,,,Y,,,,,미터
+UOM007,KMETER,㎞,4,,,,Y,,,,,킬로미터
+UOM008,MVOLT,㎷,1,,,,Y,,,,,밀리볼트
+UOM008,VOLT,V,2,,,,Y,,,,,볼트
+UOM008,KVOLT,㎸,3,,,,Y,,,,,킬로볼트
+UOM009,MWATT,㎽,1,,,,Y,,,,,밀리와트
+UOM009,WATT,W,2,,,,Y,,,,,와트
+UOM009,KWATT,㎾,3,,,,Y,,,,,킬로와트
+PRS001,INSP,검사,1,,,,Y,,,,,검사
+PRS001,ASSB,조립,2,,,,Y,,,,,조립
+PRS001,EOL,최종검사,3,,,,Y,,,,,최종검사
+PRS001,PACK,포장,4,,,,Y,,,,,포장
+PMS001,WKR,일반,1,,,,Y,,,,,작업자
+PMS001,MGR,관리,2,,,,Y,,,,,작업관리자
+PMS001,SMGR,시스템관리,3,,,,Y,,,,,시스템관리자
+LEV001,BEG,초급,1,,,,Y,,,,,초급 - Beginner
+LEV001,INT,중급,2,,,,Y,,,,,중급 - Intermediate
+LEV001,ADV,고급,3,,,,Y,,,,,고급 - Advanced
+LEV001,PRO,전문가,4,,,,Y,,,,,전문가 - Professional
+REV001,MDREV01,R01,1,,,,Y,,,,,모델 Revision R01
+REV002,RTREV01,R01,1,,,,Y,,,,,공정 라우팅 Revision R01
+REV003,SPREV001,R01,1,,,,Y,,,,,검사 Revision R01
+STA001,REG,등록,1,,,,Y,,,,,작업지시 상태 - 등록
+STA001,CFM,확정,2,,,,Y,,,,,작업지시 상태 - 확정
+STA001,PRD,생산중,3,,,,Y,,,,,작업지시 상태 - 생산중
+STA001,CC,완료,4,,,,Y,,,,,작업지시 상태 - 생산 완료
+STA001,CN,취소,5,,,,Y,,,,,작업지시 상태 - 등록 취소
+STA002,REG,등록,1,,,,Y,,,,,등록
+STA002,APP,승인,2,,,,Y,,,,,승인
+STA002,DIS,취소,3,,,,Y,,,,,취소
+STA003,APPROVE,승인,3,,,,Y,,,,,작업 상태 - 승인
+STA003,PRDUCTING,생산중,4,,,,Y,,,,,작업 상태 - 생산중
+STA003,COMPLATED,완료,5,,,,Y,,,,,작업 상태 - 완료
+STA004,STOCK,재고,1,,,,Y,,,,,현재고 상태 - 재고
+STA004,SHIPMENT1,출하,2,,,,Y,,,,,현재고 상태 - 출하
+STA004,PREINVENT,미입고,3,,,,Y,,,,,현재고 상태 - 미입고
+STA004,DISCARD,폐기,4,,,,Y,,,,,현재고 상태 - 폐기
+DIS001,RWK,재작업,1,,,,Y,,,,,불량품 조치상태 - 재작업
+DIS001,DIS,폐기,2,,,,Y,,,,,불량품 조치상태 - 폐기
+DIS001,PSS,특채,3,,,,Y,,,,,불량품 조치상태 - 특채
+DIS001,HLD,보류,4,,,,Y,,,,,불량품 조치상태 - 보류
+DFT001,MI,측정검사,1,,,,Y,,,,,불량 검출 경로 - 측정검사 (Machine Inspection)
+DFT001,VI,육안검사,2,,,,Y,,,,,불량 검출 경로 - 육안검사 (Visual Inspection)
+SEV001,LOW,경미,1,,,,Y,,,,,심각도 - 경미 (Low)
+SEV001,MIDDLE,보통,2,,,,Y,,,,,심각도 - 보통 (Middle)
+SEV001,HIGH,중대,3,,,,Y,,,,,심각도 - 중대 (High)
+SEV001,CRITICAL,치명,4,,,,Y,,,,,심각도 - 치명 (Critical)
+DTT001,REST,휴게시간,1,,,,Y,,,,,휴게시간
+DTT001,MEAL,식사시간,2,,,,Y,,,,,식사시간
+DTT001,PERIODIC,정기정비,3,,,,Y,,,,,정기정비
+DTT001,BREAK,고장,4,,,,Y,,,,,고장
+DTT001,WAITPART,자재대기,5,,,,Y,,,,,자재대기
+DTT001,WAITQUAL,품질대기,6,,,,Y,,,,,품질대기
+DTT001,CHGEQUIP,금형교체,7,,,,Y,,,,,금형교체
+DTT002,DAILY,매일,1,,,,Y,,,,,매일 주기
+DTT002,WEEKLY,매주,2,,,,Y,,,,,매주 주기
+DTT002,MONTHLY,매월,3,,,,Y,,,,,매월 주기
+DTT002,IRREGULAR,수시,4,,,,Y,,,,,수시
+STO001,PRDIN,생산입고,1,,,,Y,,,,,생산완료 입고 (Production Input)
+STO001,PARTSIN,원자재 입고,2,,,,Y,,,,,원자재 입고 (Parts Input)
+STO001,LOCMV,위치 이동,3,,,,Y,,,,,창고/위치 이동 (Location Move)
+STO001,STATCHG,상태변경,4,,,,Y,,,,,정상-보류 상태 변경 (Status Change)
+STO001,SHIPMENT,출하,5,,,,Y,,,,,고객 출하 (Shipment)
+STO001,RETURNIN,반품 입고,6,,,,Y,,,,,반품 입고 (Return Input)
+STO001,DISCARDOUT,폐기 출고,7,,,,Y,,,,,폐기 출고 (Discard Output)
+STO001,INSPECTIN,실사 재고 증가,8,,,,Y,,,,,실사에 의한 재고 증가(입고) (Actual Inspect Input)
+STO001,INSPECTOUT,실사 재고 감소,9,,,,Y,,,,,실사에 의한 재고 증가(출고) (Actual Inspect Output)
+TYP001,NUMBER,INT,1,,,,Y,,,,,integer
+TYP001,BOOLEAN,BIT,2,,,,Y,,,,,boolean 미지원으로 BIT (0 or 1) 대체
+TYP001,TEXT,VARCHAR,3,,,,Y,,,,,varchar(max) 로 입력된 길이만큰 할당
+PMT001,EMPLOYEE,직원,1,0x00000007,,,Y,,,,,"공정관련 0007 Read(1), Write(2), Exec(4)"
+PMT001,MANAGER,관리자,2,0x00000077,,,Y,,,,,"작업지시 0070 Read(1), Write(2), Exec(4)"
+PMT001,APPROVAL,결재권자,3,0x00000777,,,Y,,,,,"결재업무 0700 Read(1), Write(2), Exec(4)"
+PMT001,SYSTEM,시스템,4,0x00007777,,,Y,,,,,"기준정보 7000 Read(1), Write(2), Exec(4)"
+JDG001,RANGE,범위,1,,,,Y,,,,,범위
+JDG001,EQUAL,일치,2,,,,Y,,,,,일치
+JDG001,VISUAL,외관,3,,,,Y,,,,,외관
+REG001,ERP,ERP,1,,,,Y,,,,,ERP 연동시 사용
+REG001,MANUAL,수기,2,,,,Y,,,,,수기 입력
+MAT001,INSPECT,점검 ,1,,,,Y,,,,,점검 
+MAT001,PREVENT,예방정비,2,,,,Y,,,,,예방정비
+MAT001,REPAIR,고장수리,3,,,,Y,,,,,고장수리
+ITM001,PRODUCT1,완제품,1,,,,Y,,,,,완제품
+ITM001,PARTS1,원자재,2,,,,Y,,,,,원자재
+ITM001,PACKAGING,포장재,3,,,,Y,,,,,포장재
+WHT001,PRODUCT2,완제품,1,,,,Y,,,,,완제품
+WHT001,MANUFACT,재공,2,,,,Y,,,,,재공
+WHT001,PARTS2,원자재,3,,,,Y,,,,,원자재
+WHT001,SHIPMENT,출하,4,,,,Y,,,,,출하
