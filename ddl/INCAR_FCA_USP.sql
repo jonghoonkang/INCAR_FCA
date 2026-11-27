@@ -34,6 +34,7 @@ BEGIN
             @ErrLine AS ErrLine,
             @ErrProc AS ErrProc,
             @ErrMsg AS errMsg;
+        -- [TODO] insert error
     END
     ELSE
     BEGIN
@@ -41,17 +42,18 @@ BEGIN
         BEGIN
             SELECT
                 'NG' AS RESULT,
+                @ErrNum AS ECODE,
                 CONCAT(
                     N'[Procedure: ', @ErrProc,
                     N' | State: ', @ErrState,
                     N' | Line: ', @ErrLine,
                     N' | No: ', @ErrNum, 
                     N'] ', @ErrMsg
-                ) AS ERR_MSG;
+                ) AS MESSAGE;
         END
         ELSE
         BEGIN
-            SELECT 'NG' AS RESULT, '알 수 없는 오류가 발생했습니다.' AS ERR_MSG;
+            SELECT 'NG' AS RESULT, '알 수 없는 오류가 발생했습니다.' AS MESSAGE;
         END
     END
 END;
@@ -473,12 +475,12 @@ BEGIN
                 Modified_By          = @P_Login_ID,
                 Modified_DT          = SYSUTCDATETIME()
         WHEN NOT MATCHED THEN
-            INSERT (WO_NO, Model_CD, Source_Type_CD, Ext_Order_NO, Plan_QTY, Start_Plan_DT, End_Plan_DT, Apporve_DT, Release_DT, Status_CD, Good_QTY, Defect_QTY, Completion_QTY, Description, Use_YN, Created_By, Created_DT)
+            INSERT (WO_NO, Model_CD, Source_Type_CD, Ext_Order_NO, Plan_QTY, Start_Plan_DT, End_Plan_DT, Approve_DT, Release_DT, Status_CD, Good_QTY, Defect_QTY, Completion_QTY, Description, Use_YN, Created_By, Created_DT)
             VALUES (@Target_WO_NO, @P_Model_CD, @P_Source_Type_CD, ISNULL(@P_Ext_Order_NO, ''), @P_Plan_QTY, @P_Start_Plan_DT, @P_End_Plan_DT, NULL, NULL, 'REG', 0, 0, 0, @P_Description, @P_Use_YN, @P_Login_ID, SYSUTCDATETIME());
     
         COMMIT TRANSACTION;
 
-        SELECT 'OK' AS RESULT, @Target_WO_NO AS WO_NO, N'' AS ERR_MSG;
+        SELECT 'OK' AS RESULT, @Target_WO_NO AS WO_NO, N'' AS MESSAGE;
     END TRY
     BEGIN CATCH
         IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
@@ -635,7 +637,7 @@ BEGIN
         IF @Route_ID IS NULL
             THROW 51004, N'해당 모델에 유효한 활성 라우팅 정보가 없습니다.', 1;
 
-        SELECT TOP 1 @First_Proc = Process_ID
+        SELECT TOP 1 @First_Proc = Process_CD
           FROM dbo.TB_PROCESS_ROUTE_DETAIL
          WHERE Route_ID = @Route_ID AND Use_YN = 'Y'
          ORDER BY Sequence_NO ASC;
@@ -664,11 +666,11 @@ BEGIN
             SET @New_Lot_NO = @LotPrefix + RIGHT('0000' + CAST(@NextLotSeq AS VARCHAR(4)), 4);
 
             INSERT INTO dbo.TB_LOT_MASTER (
-                Lot_NO, WO_NO, Process_ID, Plan_QTY,
+                Lot_NO, WO_NO, Plan_QTY,
                 Start_DT, End_DT, Good_QTY, Defect_QTY, Completion_QTY,
                 Status_CD, Use_YN, Created_By, Created_DT
             ) VALUES (
-                @New_Lot_NO, @P_WO_NO, @First_Proc, @Current_Qty,
+                @New_Lot_NO, @P_WO_NO, @Current_Qty,
                 @Start_Plan_DT, @End_Plan_DT, 0, 0, 0,
                 'REG', 'Y', @P_Login_ID, SYSUTCDATETIME()
             );
@@ -706,7 +708,7 @@ CREATE PROCEDURE dbo.USP_SET_PRODUCT_MASTER
     --@P_Product_ID       VARCHAR(20),
     --@P_Inspection_ID    VARCHAR(20),
     --@P_WO_NO            VARCHAR(20),
-    --@P_Lot_NO           VARCHAR(10),
+    --@P_Lot_NO           VARCHAR(20),
     --@P_Process_ID       VARCHAR(30),
     --@P_Process_State    VARCHAR(5)   = 'RUN',
     --@P_Result_CD        VARCHAR(5)   = NULL,
@@ -781,7 +783,7 @@ BEGIN
         DECLARE @P_Product_ID       VARCHAR(20) = JSON_VALUE(@JsonInput, '$.Product_ID');
         DECLARE @P_Inspection_ID    VARCHAR(20) = JSON_VALUE(@JsonInput, '$.Inspection_ID');
         DECLARE @P_WO_NO            VARCHAR(20) = JSON_VALUE(@JsonInput, '$.WO_NO');
-        DECLARE @P_Lot_NO           VARCHAR(10) = JSON_VALUE(@JsonInput, '$.Lot_NO');
+        DECLARE @P_Lot_NO           VARCHAR(20) = JSON_VALUE(@JsonInput, '$.Lot_NO');
         DECLARE @P_Process_ID       VARCHAR(30) = JSON_VALUE(@JsonInput, '$.Process_ID');
         DECLARE @P_Process_State    VARCHAR(5)  = JSON_VALUE(@JsonInput, '$.Process_State');
         DECLARE @P_Result_CD        VARCHAR(5)  = JSON_VALUE(@JsonInput, '$.Result_CD');
@@ -1085,63 +1087,82 @@ BEGIN
 END;
 GO
 
--- 공정라우터 디테일 조회 (USP_GET_ROUTE_DETAIL)
-IF OBJECT_ID('dbo.USP_GET_PROCESS_ROUTE_DETAIL', 'P') IS NOT NULL DROP PROCEDURE dbo.USP_GET_ROUTE_DETAIL;
+-- 공정라우터 디테일 조회 (USP_GET_PROCESS_ROUTE_DETAIL)
+IF OBJECT_ID('dbo.USP_GET_PROCESS_ROUTE_DETAIL', 'P') IS NOT NULL DROP PROCEDURE dbo.USP_GET_PROCESS_ROUTE_DETAIL;
 GO
 CREATE OR ALTER PROCEDURE dbo.USP_GET_ROUTE_DETAIL
     @P_Route_ID VARCHAR(20)
 AS
 BEGIN
     SET NOCOUNT ON;
-    SELECT D.Route_ID,
-        D.Sequence_NO,
-        D.Process_ID,
-        P.Process_CD,
-        P.Process_NM,
-        D.Prev_Process_ID,
-        D.Mandatory_YN,
-        D.Use_YN,
-        D.Description
-    FROM   dbo.TB_ROUTE_DETAIL D
-        LEFT JOIN dbo.TB_PROCESS P ON D.Process_ID = P.Process_ID
-    WHERE  D.Route_ID = @P_Route_ID
-    ORDER BY D.Sequence_NO ASC;
+    SELECT D.RouteD_ID,
+           D.Route_ID,
+           P.Process_CD,
+           P.Process_NM,
+           D.Sequence_NO,
+           D.Required_YN,
+           D.Inspection_YN,
+           D.PreProcess_CD,
+           D.Line_NO,
+           D.STD_Cycle_Time,
+           D.Rework_Allowed_YN,
+           D.Rework_Process_ID,
+           D.Description
+      FROM dbo.TB_PROCESS_ROUTE_DETAIL D
+      LEFT JOIN dbo.TB_PROCESS P ON D.Process_CD = P.Process_CD
+     WHERE D.Route_ID = @P_Route_ID
+     ORDER BY D.Sequence_NO ASC;
 END;
 GO
 
--- 라우팅 상세 저장 (USP_SET_ROUTE_DETAIL)
-IF OBJECT_ID('dbo.USP_SET_PROCESS_ROUTE_DETAIL', 'P') IS NOT NULL DROP PROCEDURE dbo.USP_SET_ROUTE_DETAIL;
+-- 라우팅 상세 저장 (USP_SET_PROCESS_ROUTE_DETAIL)
+IF OBJECT_ID('dbo.USP_SET_PROCESS_ROUTE_DETAIL', 'P') IS NOT NULL DROP PROCEDURE dbo.USP_SET_PROCESS_ROUTE_DETAIL;
 GO
-CREATE OR ALTER PROCEDURE dbo.USP_SET_ROUTE_DETAIL
-    @P_Route_ID         VARCHAR(20),
-    @P_Sequence_NO      INT,
-    @P_Process_ID       VARCHAR(20),
-    @P_Prev_Process_ID  VARCHAR(20)   = NULL,
-    @P_Mandatory_YN     CHAR(1)       = 'Y',
-    @P_Use_YN           CHAR(1)       = 'Y',
-    @P_Description      NVARCHAR(200) = NULL,
-    @P_User_ID          VARCHAR(20)
+CREATE OR ALTER PROCEDURE dbo.USP_SET_PROCESS_ROUTE_DETAIL
+    @P_Route_ID                 VARCHAR(20),
+    @P_Process_CD               VARCHAR(10),
+    @P_Process_NM               VARCHAR(30),
+    @P_Sequence_NO              INT,
+    @P_Required_YN              CHAR(1),
+    @P_Inspection_YN            CHAR(1),
+    @P_PreProcess_CD            VARCHAR(10),
+    @P_Line_NO                  VARCHAR(10),
+    @P_STD_Cycle_Time           INT,
+    @P_Rework_Allowed_YN        CHAR(1),
+    @P_Rework_Process_CD        VARCHAR(10),
+    @P_Use_YN                   CHAR(1)         = 'Y',
+    @P_Description              NVARCHAR(200)   = NULL,
+    @P_User_ID                  VARCHAR(20)     = 'SYSTEM'
 AS
 BEGIN
     SET NOCOUNT ON;
     BEGIN TRY
-        DECLARE @Clean_Prev_ID VARCHAR(20) = NULLIF(LTRIM(RTRIM(@P_Prev_Process_ID)), '');
+        DECLARE @Clean_Prev_ID VARCHAR(20) = NULLIF(LTRIM(RTRIM(@P_PreProcess_CD)), '');
 
-        MERGE INTO dbo.TB_ROUTE_DETAIL WITH (HOLDLOCK) AS T
+        MERGE INTO dbo.TB_PROCESS_ROUTE_DETAIL WITH (HOLDLOCK) AS T
         USING (SELECT @P_Route_ID AS Route_ID, @P_Sequence_NO AS Sequence_NO) AS S
         ON (T.Route_ID = S.Route_ID AND T.Sequence_NO = S.Sequence_NO)
         WHEN MATCHED THEN
             UPDATE SET
-                T.Process_ID      = @P_Process_ID,
-                T.Prev_Process_ID = @Clean_Prev_ID,
-                T.Mandatory_YN    = @P_Mandatory_YN,
-                T.Use_YN          = @P_Use_YN,
-                T.Description     = @P_Description,
-                T.Modified_By     = @P_User_ID,
-                T.Modified_DT     = SYSUTCDATETIME()
+                --T.RouteD_ID         = @P_RouteD_ID,
+                T.Route_ID          = @P_Route_ID,
+                T.Process_CD        = @P_Process_CD,
+                T.Process_NM        = @P_Process_NM,
+                T.Sequence_NO       = @P_Sequence_NO,
+                T.Required_YN       = @P_Required_YN,
+                T.Inspection_YN     = @P_Inspection_YN,
+                T.PreProcess_CD     = @P_PreProcess_CD,
+                T.Line_NO           = @P_Line_NO,
+                T.STD_Cycle_Time    = @P_STD_Cycle_Time,
+                T.Rework_Allowed_YN = @P_Rework_Allowed_YN,
+                T.Rework_Process_CD = @P_Rework_Process_CD,
+                T.Use_YN            = @P_Use_YN,
+                T.Description       = @P_Description,
+                T.Modified_By       = @P_User_ID,
+                T.Modified_DT       = SYSUTCDATETIME()
         WHEN NOT MATCHED THEN
-            INSERT (Route_ID, Sequence_NO, Process_ID, Prev_Process_ID, Mandatory_YN, Use_YN, Description, Created_By, Created_DT)
-            VALUES (@P_Route_ID, @P_Sequence_NO, @P_Process_ID, @Clean_Prev_ID, @P_Mandatory_YN, @P_Use_YN, @P_Description, @P_User_ID, SYSUTCDATETIME());
+            INSERT (Route_ID, Process_CD, Process_NM, Sequence_NO, Required_YN, Inspection_YN, PreProcess_CD, Line_NO, STD_Cycle_Time, Rework_Allowed_YN, Rework_Process_CD, Use_YN, Description, Created_By, Created_DT)
+            VALUES (@P_Route_ID, @P_Process_CD, @P_Process_NM, @P_Sequence_NO, @P_Required_YN, @P_Inspection_YN, @P_PreProcess_CD, @P_Line_NO, @P_STD_Cycle_Time, @P_Rework_Allowed_YN, @P_Rework_Process_CD, @P_Use_YN, @P_Description, @P_User_ID, SYSUTCDATETIME());
 
         SELECT 'OK' AS Result_CD, N'라우팅 공정 순서가 저장되었습니다.' AS Result_Msg;
     END TRY
@@ -1161,7 +1182,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
     BEGIN TRY
-        DELETE FROM dbo.TB_ROUTE_DETAIL
+        DELETE FROM dbo.TB_PROCESS_ROUTE_DETAIL
         WHERE  Route_ID = @P_Route_ID AND Sequence_NO = @P_Sequence_NO;
 
         SELECT 'OK' AS Result_CD, N'공정 순서가 삭제되었습니다.' AS Result_Msg;
@@ -1375,68 +1396,65 @@ GO
 IF OBJECT_ID('dbo.USP_CHECK_PROCESS', 'P') IS NOT NULL DROP PROCEDURE dbo.USP_CHECK_PROCESS;
 GO
 CREATE PROCEDURE dbo.USP_CHECK_PROCESS
-    @P_Login_ID     VARCHAR(10),
-    @P_Product_ID   VARCHAR(20),    -- or Inspection_ID
-    @P_Process_CD   VARCHAR(30)
+    @JsonInput NVARCHAR(MAX)
 AS
 BEGIN
     SET NOCOUNT ON;
-    BEGIN TRANSACTION;
     BEGIN TRY
-        -- 1) 검사 테이블 저장
-        SELECT Inspection_ID,
-               PROCESS_ID
-          FROM dbo.TB_PRODUCT_MASTER
-         WHERE Product_ID = @P_Product_ID;
+        IF ISJSON(@JsonInput) = 0
+            THROW 54001, N'잘못된 JSON 형식입니다.', 1;
 
-        USING (SELECT @P_Product_ID AS Product_ID) AS S
-        ON (T.Inspection_ID = S.Inspection_ID)
-        WHEN MATCHED THEN
-            UPDATE SET 
-                Inspection_ID   = @P_Inspection_ID,
-                Product_ID      = @P_Product_ID,
-                Process_ID      = @P_Process_ID,
-                Resistance      = @P_Resistance,
-                NCount          = @P_NCount,
-                Start_DT        = @P_Start_DT,
-                End_DT          = @P_End_DT,
-                PCheck          = @P_PCheck,
-                Result_CD       = @P_Result_CD,
-                Error_CD        = @P_Error_CD,
-                Use_YN          = @P_Use_YN,
-                Created_By      = @P_Worker_ID,
-                Modified_By     = @P_User_ID,
-                Modified_DT     = SYSUTCDATETIME()
-        WHEN NOT MATCHED THEN
-            INSERT (Inspection_ID, Product_ID, Process_ID, Resistance, NCount, Start_DT, End_DT, PCheck, Result_CD, Error_CD, Use_YN, Created_By, Created_DT)
-            VALUES (@P_Inspection_ID, @P_Product_ID, @P_Process_ID, @P_Resistance, @P_NCount, @P_Start_DT, @P_End_DT, @P_PCheck, @P_Result_CD, @P_Error_CD, @P_Use_YN, @P_Worker_ID, SYSUTCDATETIME());
+        DECLARE @P_User_ID    VARCHAR(20) = JSON_VALUE(@JsonInput, '$.User_ID');
+        DECLARE @P_Product_ID VARCHAR(20) = JSON_VALUE(@JsonInput, '$.Product_ID');
+        DECLARE @P_Process_CD VARCHAR(30) = JSON_VALUE(@JsonInput, '$.Process_CD');
 
-        -- 2) 제품 마스터 업데이트 (Stator Barcode 및 공정 진행 정보)
-        DECLARE @JsonInput NVARCHAR(MAX);
-        SET @JsonInput = (
-            SELECT 
-                @P_Inspection_ID AS Inspection_ID,
+        DECLARE @Cur_Proc_ID    VARCHAR(30),
+                @Cur_State      VARCHAR(10),
+                @Cur_Result_CD  VARCHAR(10),
+                @Cur_Error_CD  VARCHAR(10),
+                @WO_NO          VARCHAR(20),
+                @Lot_NO         VARCHAR(20);
+
+        SELECT  @Cur_Proc_ID   = Process_ID,
+                @Cur_State     = Process_State,
+                @Cur_Result_CD = Result_CD,
+                @Cur_Error_CD  = Error_CD,
+                @WO_NO         = WO_NO,
+                @Lot_NO        = Lot_NO
+        FROM    dbo.TB_PRODUCT_MASTER
+        WHERE   Product_ID = @P_Product_ID AND Use_YN = 'Y';
+
+        -- 1) 첫 공정 신규 투입 제품인 경우 (아직 TB_PRODUCT_MASTER에 없는 경우)
+        IF @Cur_Proc_ID IS NULL
+        BEGIN
+            SELECT  'OK' AS RESULT,
+                    @P_Product_ID AS Product_ID,
+                    @P_Process_CD AS Process_CD,
+                    N'신규 투입 가능' AS MESSAGE;
+            RETURN;
+        END
+
+        -- 2) 이전 공정 불량(NG) 제품 인터락 차단
+        IF @Cur_Result_CD = 'NG'
+        BEGIN
+            SELECT  'NG' AS RESULT,
+                    @P_Product_ID AS Product_ID,
+                    @Cur_Error_CD AS ECODE,
+                    @Cur_Proc_ID AS Process_CD,
+                    N'이전 공정 불량(NG) 판정 제품입니다.' AS MESSAGE;
+            RETURN;
+        END
+
+        -- 3) 정상 진행 가능 응답 반환
+        SELECT  'OK' AS RESULT,
+                ISNULL(@Cur_State, 'READY') AS Status,
                 @P_Product_ID AS Product_ID,
-                @P_Process_ID AS Process_ID,
-                @P_Resistance AS Resistance,
-                @P_Stator_Barcode AS Stator_Barcode
-            FOR JSON PATH, WITHOUT_ARRAY_WRAPPER
-        );
-        --PRINT (SELECT @JsonInput AS GeneratedJson);
-
-        EXEC dbo.USP_SET_PRODUCT_MASTER @JsonInput = @JsonInput;
-            --@P_Product_ID     = @P_Product_ID,
-            --@P_Process_ID     = @P_Process_ID,
-            --@P_Inspection_ID  = @P_Inspection_ID,
-            --@P_Result_CD      = @P_Result_CD,
-            --@P_Error_CD       = @P_Error_CD,
-            --@P_Stator_Barcode = @P_Stator_Barcode,
-            --@P_User_ID        = @P_User_ID;
-
-        COMMIT TRANSACTION;
+                @WO_NO AS WO_NO,
+                @Lot_NO AS Lot_NO,
+                @Cur_Proc_ID AS Current_Process_CD,
+                N'공정 작업 가능(OK)' AS MESSAGE;
     END TRY
     BEGIN CATCH
-        IF @@TRANCOUNT > 0 ROLLBACK TRANSACTION;
         EXEC USP_GetError;
         THROW;
     END CATCH

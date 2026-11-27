@@ -126,6 +126,7 @@ CREATE TABLE dbo.TB_PROCESS (
     Process_CD          VARCHAR(20)     NOT NULL,   -- 공정코드
     Process_Type_CD     VARCHAR(10)     NOT NULL,   -- 공정유형 (PRS001)
     Process_NM          VARCHAR(30)     NOT NULL,   -- 공정명
+    Use_Table_NM        VARCHAR(50)     NOT NULL,   -- 사용 테이블명
     Sequence_NO         INT             NOT NULL,   -- 공정 순서
     Inspection_YN       CHAR(1)         NOT NULL,   -- 검사/판정 공정 여부 (Y, N)
     STD_Cycle_Time      INT             NOT NULL,   -- 표준 사이클타임(초)
@@ -176,7 +177,7 @@ CREATE TABLE dbo.TB_PROCESS_ROUTE_DETAIL (
     Line_NO             VARCHAR(10)     NOT NULL,   -- 사용 라인
     STD_Cycle_Time      INT             NOT NULL,   -- 표준 사이클타임(초)
     Rework_Allowed_YN   CHAR(1)         NOT NULL,   -- 재작업 허용 여부 (Y, N)
-    Rework_Ret_Process_ID VARCHAR(10)   NULL,       -- 재작업 시 복귀 공정
+    Rework_Process_CD   VARCHAR(10)     NULL,       -- 재작업 시 복귀 공정코드
     Use_YN              CHAR(1)         NOT NULL CONSTRAINT DF_TB_PRCESS_ROUTED_Use_YN DEFAULT 'Y',   -- 사용 여부 (Y, N)
     Created_By          VARCHAR(10)     NOT NULL CONSTRAINT DF_TB_PRCESS_ROUTED_Created_By DEFAULT 'SYSTEM',   -- 생성인
     Created_DT          DATETIME2(0)    NOT NULL CONSTRAINT DF_TB_PRCESS_ROUTED_Created_DT DEFAULT SYSUTCDATETIME(),  -- 생성일자
